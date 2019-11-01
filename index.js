@@ -1,6 +1,6 @@
-require('dotenv').config();
+const config = require('config');
 
-if (!process.env.PORT) {
+if (!config.get('port')) {
   console.error("\nCouldn't start server. Missing PORT env variable\n");
   process.exit(1);
 }
@@ -59,4 +59,4 @@ io.on('connection', function(socket) {
   socket.on('startMatch', startMatch.bind(this, env, player));
   socket.on('stopMatch', stopMatch.bind(this, env, player));
 });
-io.listen(process.env.PORT);
+io.listen(config.get('port'));
