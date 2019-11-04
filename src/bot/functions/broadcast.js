@@ -1,4 +1,4 @@
-module.exports = function(msgstring, callback) {
+module.exports = function(msgstring) {
   let thisBot = this;
 
   let envelope = {

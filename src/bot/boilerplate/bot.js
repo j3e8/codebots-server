@@ -16,6 +16,15 @@ class Bot {
     });
   }
 
+  log(...args) {
+    console.log('bot.js', ...args);
+    return prepareAndPostMessage({
+      obj: 'Bot',
+      fn: 'log',
+      args: [...args]
+    });
+  }
+
   fire(cb) {
     return prepareAndPostMessage({
       obj: 'Bot',
@@ -36,6 +45,14 @@ class Bot {
     return prepareAndPostMessage({
       obj: 'Bot',
       fn: 'getBarrelRotation',
+      args: []
+    }, cb);
+  }
+
+  getLocation(cb) {
+    return prepareAndPostMessage({
+      obj: 'Bot',
+      fn: 'getLocation',
       args: []
     }, cb);
   }
@@ -96,7 +113,7 @@ class Bot {
     }, cb);
   }
 
-  scan() {
+  scan(cb) {
     return prepareAndPostMessage({
       obj: 'Bot',
       fn: 'scan',

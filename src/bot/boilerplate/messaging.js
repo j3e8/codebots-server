@@ -3,10 +3,10 @@ const __bot = new UserBotClassName();
 const __callbacks = {};
 
 parentPort.on('message', (message) => {
-  console.log('receiveMessage', JSON.stringify(message, null, 2));
+  // console.log('receiveMessage', JSON.stringify(message, null, 2));
   if (message.guid) { // this is a callback from webworker-initiated communication
     if (__callbacks[message.guid]) {
-      console.log('fire callback', message.args);
+      // console.log('fire callback', message.args);
       __callbacks[message.guid].apply(__bot, message.args);
       delete __callbacks[message.guid];
     }
@@ -19,23 +19,28 @@ parentPort.on('message', (message) => {
 });
 
 function prepareAndPostMessage(data, callback) {
-  console.log('prepareAndPostMessage begin');
+  // console.log('prepareAndPostMessage begin');
   let guid = makeGuid();
   let _data = Object.assign({}, data, { guid: guid });
 
   let isPromise = callback ? false : true;
   if (isPromise) {
-    console.log('isPromise');
     return new Promise((resolve, reject) => {
       __callbacks[guid] = resolve;
       parentPort.postMessage(_data);
     })
+    .catch((err) => {
+      console.error(`Worker promise error`, data, err);
+      parentPort.postMessage({
+        error: err.toString(),
+      });
+    });
   }
   else {
     __callbacks[guid] = callback;
     parentPort.postMessage(_data);
   }
-  console.log('prepareAndPostMessage done');
+  // console.log('prepareAndPostMessage done');
 }
 
 const validChars = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'];

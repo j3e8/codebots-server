@@ -16,8 +16,8 @@ class Bot {
     this.height = 3.4054;
     this.location = {
       x: 0,
-      y: 0
-    }
+      y: 0,
+    };
     this.velocity = 0;
     this.maxVelocity = 0.015;
     this.rotation = 0;
@@ -29,8 +29,8 @@ class Bot {
       maxRotationVelocity: 0.0009,
       height: 1.541,
       width: 4.865,
-      length: 2.2
-    }
+      length: 2.2,
+    };
     this.timeBetweenBullets = 1000; // ms
     this.lastBulletFiredTime = 0; // timestamp
     this.scanDuration = 400; // ms
@@ -42,9 +42,8 @@ class Bot {
       args: []
     });
 
-    let self = this;
-    function callback(guid, fn, retval) {
-      self.worker.postMessage({
+    const callback = (guid, fn, retval) => {
+      this.worker.postMessage({
         guid: guid,
         fn: fn,
         args: [ retval ]
@@ -52,16 +51,30 @@ class Bot {
     }
 
     this.worker.on("message", (message) => {
-      let args = message.args.concat([ callback.bind(this, message.guid, message.fn) ]);
-      if (message.obj == 'Bot' && BotFunctions[message.fn] && self.alive) {
-        console.log(`calling BotFunctions[${message.fn}]`);
-        BotFunctions[message.fn].apply(self, args);
+      if (message.error) {
+        console.log('emitScriptError');
+        this.emitScriptError(message.error);
+      } else {
+        const args = message.args.concat([ callback.bind(this, message.guid, message.fn) ]);
+        if (message.obj == 'Bot' && BotFunctions[message.fn] && this.alive) {
+          console.log(`calling BotFunctions[${message.fn}]`);
+          BotFunctions[message.fn].apply(this, args);
+        }
       }
-    })
+    });
 
     this.worker.on("error", (err) => {
-      console.log('Worker error:', err);
-    })
+      this.emitScriptError(err);
+    });
+  }
+
+  emitScriptError(err) {
+    console.error('Worker script error:', err);
+    this.owner.socket.emit('scriptError', {
+      botId: this.id,
+      botName: this.name,
+      error: err.toString(),
+    });
   }
 
   crashTest(bot) {

@@ -1,8 +1,10 @@
 module.exports = {
   broadcast: require('./broadcast'),
+  log: require('./log'),
   fire: require('./fire'),
   forward: require('./forward'),
   getBarrelRotation: require('./get-barrel-rotation'),
+  getLocation: require('./get-location'),
   getRotation: require('./get-rotation'),
   reload: require('./reload'),
   reverse: require('./reverse'),
