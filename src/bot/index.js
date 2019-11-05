@@ -39,7 +39,7 @@ class Bot {
 
     this.worker.postMessage({
       fn: 'init',
-      args: []
+      args: [this.id, this.name],
     });
 
     const callback = (guid, fn, retval) => {
