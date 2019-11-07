@@ -2,18 +2,14 @@ const config = require('config');
 const fs = require( 'fs' );
 const https = require('https');
 
-if (!config.get('port')) {
+if (!config.has('port')) {
   console.error("\nCouldn't start server. Missing PORT env variable\n");
   process.exit(1);
 }
 
-// process.env.NODE_ENV = 'production';
-console.log(process.env.NODE_ENV);
-
-
 // instantiate a socket listener
 let io;
-if (config.get('https')) {
+if (config.has('https')) {
   const app = require('express')();
   const server = https.createServer({
     key: fs.readFileSync(config.get('https').ssl_key),
