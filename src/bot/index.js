@@ -1,5 +1,7 @@
 const { Worker } = require('worker_threads');
 const BotFunctions = require('./functions');
+const MatchFunctions = require('../../match/functions');
+const ArenaFunctions = require('../../arena/functions');
 const getId = require('./get-id');
 
 class Bot {
@@ -59,6 +61,12 @@ class Bot {
         if (message.obj == 'Bot' && BotFunctions[message.fn] && this.alive) {
           console.log(`calling BotFunctions[${message.fn}]`);
           BotFunctions[message.fn].apply(this, args);
+        } else if (message.obj === 'Arena' && ArenaFunctions[message.fn]) {
+          console.log(`calling ArenaFunctions[${message.fn}]`);
+          ArenaFunctions[message.fn].apply(this, args);
+        } else if (message.obj === 'Match' && MatchFunctions[message.fn]) {
+          console.log(`calling MatchFunctions[${message.fn}]`);
+          MatchFunctions[message.fn].apply(this, args);
         }
       }
     });
