@@ -1,0 +1,9 @@
+{
+  "tmpdir": "/tmp",
+  "port": 5443,
+
+  "https": {
+    "ssl_cert": "/etc/letsencrypt/live/codebots.run/fullchain.pem",
+    "ssl_key": "/etc/letsencrypt/live/codebots.run/privkey.pem"
+  }
+}

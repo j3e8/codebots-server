@@ -1,12 +1,33 @@
 const config = require('config');
+const fs = require( 'fs' );
+const https = require('https');
 
 if (!config.get('port')) {
   console.error("\nCouldn't start server. Missing PORT env variable\n");
   process.exit(1);
 }
 
+// process.env.NODE_ENV = 'production';
+console.log(process.env.NODE_ENV);
+
+
 // instantiate a socket listener
-const io = require('socket.io')();
+let io;
+if (config.get('https')) {
+  const app = require('express')();
+  const server = https.createServer({
+    key: fs.readFileSync(config.get('https').ssl_key),
+    cert: fs.readFileSync(config.get('https').ssl_cert),
+    requestCert: false,
+    rejectUnauthorized: false
+  }, app);
+  server.listen(config.get('port'));
+  io = require('socket.io').listen(server);
+} else {
+  io = require('socket.io')();
+  io.listen(config.get('port'));
+}
+
 
 const env = {
   startTime: new Date(),
@@ -59,4 +80,3 @@ io.on('connection', function(socket) {
   socket.on('startMatch', startMatch.bind(this, env, player));
   socket.on('stopMatch', stopMatch.bind(this, env, player));
 });
-io.listen(config.get('port'));
