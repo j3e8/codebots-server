@@ -1,7 +1,7 @@
 const { Worker } = require('worker_threads');
 const BotFunctions = require('./functions');
-const MatchFunctions = require('../../match/functions');
-const ArenaFunctions = require('../../arena/functions');
+const MatchFunctions = require('../match/functions');
+const ArenaFunctions = require('../arena/functions');
 const getId = require('./get-id');
 
 class Bot {
