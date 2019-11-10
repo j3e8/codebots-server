@@ -18,6 +18,13 @@ class Room {
     bot.room = this;
   }
 
+  removeBot(bot) {
+    const index = this.bots.indexOf(bot);
+    if (index >= 0) {
+      this.bots.splice(index, 1);
+    }
+  }
+
   addPlayer(player, isRoomOwner) {
     this.players.push(player);
     if (isRoomOwner) {

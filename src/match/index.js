@@ -51,22 +51,20 @@ class Match {
           continue;
         }
         if (this.bots[a].crashTest(this.bots[b])) {
-          this.bots[a].doDamage(this.bots[b].crashDamage * this.bots[b].velocity);
-          this.bots[b].doDamage(this.bots[a].crashDamage * this.bots[a].velocity);
-          this.bots[a].revertMove();
-          this.bots[b].revertMove();
+          this.bots[a].onCrash(this.bots[b]);
+          this.bots[b].onCrash(this.bots[a]);
         }
       }
     }
 
+    // collision detection with arena walls
     for (let a=0; a < this.bots.length; a++) {
       if (this.bots[a].location.x <= 0 + this.bots[a].width / 2
         || this.bots[a].location.y <= 0 + this.bots[a].height / 2
         || this.bots[a].location.x >= this.arena.width - this.bots[a].width / 2
         || this.bots[a].location.y >= this.arena.height - this.bots[a].height / 2
       ) {
-        this.bots[a].doDamage(this.bots[a].crashDamage * this.bots[a].velocity);
-        this.bots[a].revertMove();
+        this.bots[a].onWallBump();
       }
     }
 
@@ -89,7 +87,7 @@ class Match {
       for (let j=0; j < this.bots.length; j++) {
         let bot = this.bots[j];
         if (bot.hitTest(bullet)) {
-          bot.doDamage(bullet.damage);
+          bot.onHit(bullet);
           this.bullets.splice(i, 1);
           i--;
           break; // break out of the bot loop
@@ -116,6 +114,12 @@ class Match {
             status: finished ? 'finished' : 'canceled',
             winner: finished ? this.bots.find(b => b.alive) : null,
           },
+        });
+      }
+      if (player.bot.alive) {
+        player.bot.worker.postMessage({
+          fn: 'end',
+          args: []
         });
       }
     })
@@ -146,7 +150,7 @@ class Match {
       bot.worker.postMessage({
         fn: 'start',
         args: []
-      })
+      });
     });
     env.matches.push(this);
     this.room.players.forEach((player) => {

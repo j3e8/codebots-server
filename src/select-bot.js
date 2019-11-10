@@ -10,6 +10,9 @@ module.exports = function selectBot(env, player, msg) {
 
   return generateScript(scriptPath, srcPath, msg.script)
   .then(() => {
+    if (player.bot) {
+      player.room.removeBot(player.bot);
+    }
     // instantiate bot from script
     player.bot = new Bot(env, player, msg.name, scriptPath);
     // add bot to room

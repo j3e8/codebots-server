@@ -39,6 +39,8 @@ class Bot {
     this.crashDamage = 1;
     this.isLoaded = false;
 
+    this.subscribers = {};
+
     this.worker.postMessage({
       fn: 'init',
       args: [this.id, this.name],
@@ -60,6 +62,7 @@ class Bot {
         const args = message.args.concat([ callback.bind(this, message.guid, message.fn) ]);
         if (message.obj == 'Bot' && BotFunctions[message.fn] && this.alive) {
           console.log(`calling BotFunctions[${message.fn}]`);
+          console.trace('BotFunctions');
           BotFunctions[message.fn].apply(this, args);
         } else if (message.obj === 'Arena' && ArenaFunctions[message.fn]) {
           console.log(`calling ArenaFunctions[${message.fn}]`);
@@ -85,6 +88,20 @@ class Bot {
     });
   }
 
+  addSubscriber(operation, callback) {
+    if (!this.subscribers[operation]) {
+      this.subscribers[operation] = [];
+    }
+    if (callback) {
+      this.subscribers[operation].push(callback);
+    }
+  }
+
+  callSubscribers(operation, ...args) {
+    const callbacks = this.subscribers[operation].splice(0, this.subscribers[operation].length);
+    callbacks.forEach((cb) => cb(...args));
+  }
+
   crashTest(bot) {
     let sqd = (bot.location.x - this.location.x)*(bot.location.x - this.location.x) + (bot.location.y - this.location.y)*(bot.location.y - this.location.y);
     let r1 = Math.min(this.width, this.height) / 2;
@@ -102,6 +119,41 @@ class Bot {
       this.hp = 0;
       this.alive = false;
     }
+  }
+
+  onCrash(otherBot) {
+    this.doDamage(otherBot.crashDamage * otherBot.velocity);
+    this.revertMove();
+    if (!this.alive) {
+      return;
+    }
+    this.worker.postMessage({
+      fn: 'onCrash',
+      args: [otherBot],
+    });
+  }
+
+  onHit(bullet) {
+    this.doDamage(bullet.damage);
+    if (!this.alive) {
+      return;
+    }
+    this.worker.postMessage({
+      fn: 'onHit',
+      args: [bullet],
+    });
+  }
+
+  onWallBump() {
+    this.doDamage(this.crashDamage * this.velocity);
+    this.revertMove();
+    if (!this.alive) {
+      return;
+    }
+    this.worker.postMessage({
+      fn: 'onWallBump',
+      args: [],
+    });
   }
 
   fireBullet(b) {
@@ -147,7 +199,6 @@ class Bot {
   }
 
   reload() {
-    console.log('reload');
     this.isLoaded = true;
   }
 

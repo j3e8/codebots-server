@@ -1,9 +1,15 @@
 module.exports = function(callback) {
-  let bot = this;
+  this.addSubscriber('scan', callback);
 
+  if (this.isScanning) {
+    return; // wait
+  }
+
+  this.isScanning = true;
   setTimeout(() => {
+    this.isScanning = false;
     let results = {
-      bots: bot.match.bots.map((b) => {
+      bots: this.match.bots.map((b) => {
         return {
           id: b.id,
           hp: b.hp,
@@ -15,7 +21,7 @@ module.exports = function(callback) {
           velocity: b.velocity,
         }
       }),
-      bullets: bot.match.bullets.map((b) => {
+      bullets: this.match.bullets.map((b) => {
         return {
           damage: b.damage,
           location: {
@@ -27,6 +33,6 @@ module.exports = function(callback) {
         };
       }),
     }
-    callback(results);
-  }, bot.scanDuration);
+    this.callSubscribers('scan', results);
+  }, this.scanDuration);
 }

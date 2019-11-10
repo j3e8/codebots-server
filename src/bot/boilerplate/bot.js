@@ -65,6 +65,14 @@ class Bot {
     }, cb);
   }
 
+  getStatus(cb) {
+    return prepareAndPostMessage({
+      obj: 'Bot',
+      fn: 'getStatus',
+      args: []
+    }, cb);
+  }
+
   reload(cb) {
     return prepareAndPostMessage({
       obj: 'Bot',

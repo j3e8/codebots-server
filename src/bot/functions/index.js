@@ -6,6 +6,7 @@ module.exports = {
   getBarrelRotation: require('./get-barrel-rotation'),
   getLocation: require('./get-location'),
   getRotation: require('./get-rotation'),
+  getStatus: require('./get-status'),
   reload: require('./reload'),
   reverse: require('./reverse'),
   rotate: require('./rotate'),
