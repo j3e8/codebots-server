@@ -87,7 +87,8 @@ class Match {
       for (let j=0; j < this.bots.length; j++) {
         let bot = this.bots[j];
         if (bot.hitTest(bullet)) {
-          bot.onHit(bullet);
+          bot.onShot(bullet); // react to being shot
+          bullet.owner.onHit(bot, bullet); // acknowledge that you hit someone
           this.bullets.splice(i, 1);
           i--;
           break; // break out of the bot loop

@@ -132,13 +132,22 @@ class Bot {
     });
   }
 
-  onHit(bullet) {
+  /* This bot's bullet hit another bot */
+  onHit(bot, bullet) {
+    this.worker.postMessage({
+      fn: 'onHit',
+      args: [bot.getStatus(), bullet.getStatus()],
+    });
+  }
+
+  /* This bot was shot by another */
+  onShot(bullet) {
     this.doDamage(bullet.damage);
     if (!this.alive) {
       return;
     }
     this.worker.postMessage({
-      fn: 'onHit',
+      fn: 'onShot',
       args: [bullet.getStatus()],
     });
   }
