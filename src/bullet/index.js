@@ -25,7 +25,13 @@ class Bullet {
     return {
       width: this.width,
       height: this.height,
-      location: this.location
+      location: {
+        x: this.location.x,
+        y: this.location.y,
+      },
+      velocity: this.velocity,
+      angle: this.angle,
+      damage: this.damage,
     }
   }
 }

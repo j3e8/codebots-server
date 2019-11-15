@@ -62,7 +62,6 @@ class Bot {
         const args = message.args.concat([ callback.bind(this, message.guid, message.fn) ]);
         if (message.obj == 'Bot' && BotFunctions[message.fn] && this.alive) {
           console.log(`calling BotFunctions[${message.fn}]`);
-          console.trace('BotFunctions');
           BotFunctions[message.fn].apply(this, args);
         } else if (message.obj === 'Arena' && ArenaFunctions[message.fn]) {
           console.log(`calling ArenaFunctions[${message.fn}]`);
@@ -129,7 +128,7 @@ class Bot {
     }
     this.worker.postMessage({
       fn: 'onCrash',
-      args: [otherBot],
+      args: [otherBot.getStatus()],
     });
   }
 
@@ -140,7 +139,7 @@ class Bot {
     }
     this.worker.postMessage({
       fn: 'onHit',
-      args: [bullet],
+      args: [bullet.getStatus()],
     });
   }
 
@@ -177,7 +176,7 @@ class Bot {
       height: this.height,
       location: this.location,
       rotation: this.rotation,
-      barrel: this.barrel,
+      barrel: Object.assign({}, this.barrel),
       color: this.color,
       hp: this.hp,
       maxHp: this.maxHp,

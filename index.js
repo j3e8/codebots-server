@@ -47,16 +47,23 @@ const selectCmpBot = require('./src/select-cmp-bot');
 const startMatch = require('./src/start-match');
 const stopMatch = require('./src/stop-match');
 
+function emitStatus(socket, status) {
+  if (!socket) {
+    return;
+  }
+  socket.emit('status', status);
+}
+
+function animateMatches(matches) {
+  matches.forEach((m) => {
+    m.animateFrame();
+    m.room.players.map((c) => emitStatus(c.socket, m.getStatus()));
+  });
+}
+
 // animation loop
 function animateFrame() {
-  env.matches.forEach((m) => {
-    m.animateFrame();
-    m.room.players.forEach((c) => {
-      if (c.socket) {
-        c.socket.emit('status', m.getStatus());
-      }
-    })
-  });
+  animateMatches(env.matches);
   setTimeout(animateFrame, 20);
 }
 setTimeout(animateFrame, 20);

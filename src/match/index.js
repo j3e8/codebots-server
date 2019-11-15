@@ -105,24 +105,26 @@ class Match {
   }
 
   endMatch(finished) {
+    console.log('endMatch');
     this.ended = true;
     this.endTime = new Date().getTime();
+    const winner = finished ? this.bots.find(b => b.alive) : null;
     this.room.players.forEach((player) => {
       if (player.socket) {
         player.socket.emit('matchEnded', {
           results: {
             status: finished ? 'finished' : 'canceled',
-            winner: finished ? this.bots.find(b => b.alive) : null,
+            winner: winner ? winner.getBotData() : null,
           },
         });
       }
       if (player.bot.alive) {
         player.bot.worker.postMessage({
           fn: 'end',
-          args: []
+          args: [],
         });
       }
-    })
+    });
   }
 
   fireBullet(bullet) {
