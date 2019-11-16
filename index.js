@@ -55,10 +55,15 @@ function emitStatus(socket, status) {
 }
 
 function animateMatches(matches) {
-  matches.forEach((m) => {
+  for (let i=0; i < matches.length; i++) {
+    const m = matches[i];
     m.animateFrame();
     m.room.players.map((c) => emitStatus(c.socket, m.getStatus()));
-  });
+    if (m.ended) {
+      matches.splice(i, 1);
+      i--;
+    }
+  }
 }
 
 // animation loop

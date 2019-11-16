@@ -51,8 +51,18 @@ class Match {
           continue;
         }
         if (this.bots[a].crashTest(this.bots[b])) {
+          let botAlive = this.bots[a].alive;
           this.bots[a].onCrash(this.bots[b]);
+          if (botAlive !== this.bots[a].alive) {
+            this.bots[a].onDied(this.bots[b]);
+            this.bots[b].onKill(this.bots[a]);
+          }
+          botAlive = this.bots[b].alive;
           this.bots[b].onCrash(this.bots[a]);
+          if (botAlive !== this.bots[b].alive) {
+            this.bots[b].onDied(this.bots[a]);
+            this.bots[a].onKill(this.bots[b]);
+          }
         }
       }
     }
@@ -87,8 +97,13 @@ class Match {
       for (let j=0; j < this.bots.length; j++) {
         let bot = this.bots[j];
         if (bot.hitTest(bullet)) {
-          bot.onShot(bullet); // react to being shot
+          let botAlive = bot.alive;
+          bot.onShot(bullet.owner, bullet); // react to being shot
           bullet.owner.onHit(bot, bullet); // acknowledge that you hit someone
+          if (botAlive !== bot.alive) {
+            bot.onDied(bullet.owner, bullet);
+            bullet.owner.onKill(bot, bullet); // acknowledge the kill
+          }
           this.bullets.splice(i, 1);
           i--;
           break; // break out of the bot loop
@@ -119,7 +134,7 @@ class Match {
           },
         });
       }
-      if (player.bot.alive) {
+      if (player.bot) {
         player.bot.worker.postMessage({
           fn: 'end',
           args: [],

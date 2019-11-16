@@ -132,6 +132,14 @@ class Bot {
     });
   }
 
+  /* You died. This is who killed you */
+  onDied(bot, bullet) {
+    this.worker.postMessage({
+      fn: 'onDied',
+      args: [bot.getStatus(), bullet.getStatus()],
+    });
+  }
+
   /* This bot's bullet hit another bot */
   onHit(bot, bullet) {
     this.worker.postMessage({
@@ -140,15 +148,23 @@ class Bot {
     });
   }
 
+  /* You killed some other bot */
+  onKill(bot, bullet) {
+    this.worker.postMessage({
+      fn: 'onKill',
+      args: [bot.getStatus(), bullet.getStatus()],
+    });
+  }
+
   /* This bot was shot by another */
-  onShot(bullet) {
+  onShot(bot, bullet) {
     this.doDamage(bullet.damage);
     if (!this.alive) {
       return;
     }
     this.worker.postMessage({
       fn: 'onShot',
-      args: [bullet.getStatus()],
+      args: [bot.getStatus(), bullet.getStatus()],
     });
   }
 
