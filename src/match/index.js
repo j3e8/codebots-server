@@ -131,6 +131,7 @@ class Match {
           results: {
             status: finished ? 'finished' : 'canceled',
             winner: winner ? winner.getBotData() : null,
+            elapsedTime: this.endTime - this.startTime,
           },
         });
       }

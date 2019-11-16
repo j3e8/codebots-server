@@ -47,11 +47,13 @@ class Bot {
     });
 
     const callback = (guid, fn, retval) => {
-      this.worker.postMessage({
-        guid: guid,
-        fn: fn,
-        args: [ retval ]
-      });
+      if (this.worker) {
+        this.worker.postMessage({
+          guid: guid,
+          fn: fn,
+          args: [ retval ]
+        });
+      }
     }
 
     this.worker.on("message", (message) => {
@@ -80,11 +82,13 @@ class Bot {
 
   emitScriptError(err) {
     console.error('Worker script error:', err);
-    this.owner.socket.emit('scriptError', {
-      botId: this.id,
-      botName: this.name,
-      error: err.toString(),
-    });
+    if (this.owner && this.owner.socket) {
+      this.owner.socket.emit('scriptError', {
+        botId: this.id,
+        botName: this.name,
+        error: err.toString(),
+      });
+    }
   }
 
   addSubscriber(operation, callback) {
@@ -189,6 +193,7 @@ class Bot {
   getBotData() {
     return {
       id: this.id,
+      playerName: this.owner ? this.owner.name : 'Cmp',
       name: this.name,
       color: this.color
     }
@@ -197,6 +202,7 @@ class Bot {
   getStatus() {
     return {
       id: this.id,
+      name: this.name,
       width: this.width,
       height: this.height,
       location: this.location,

@@ -57,11 +57,18 @@ function emitStatus(socket, status) {
 function animateMatches(matches) {
   for (let i=0; i < matches.length; i++) {
     const m = matches[i];
-    m.animateFrame();
-    m.room.players.map((c) => emitStatus(c.socket, m.getStatus()));
     if (m.ended) {
+      console.log('terminate workers');
+      m.room.players.forEach((player) => {
+        player.bot.worker.terminate()
+        player.bot.worker = null;
+      });
+      console.log('splice that match');
       matches.splice(i, 1);
       i--;
+    } else {
+      m.animateFrame();
+      m.room.players.map((c) => emitStatus(c.socket, m.getStatus()));
     }
   }
 }
