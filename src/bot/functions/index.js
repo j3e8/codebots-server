@@ -14,5 +14,8 @@ module.exports = {
   rotateBarrelTo: require('./rotate-barrel-to'),
   rotateTo: require('./rotate-to'),
   scan: require('./scan'),
-  setColor: require('./set-color')
+  setColor: require('./set-color'),
+  stop: require('./stop'),
+  stopRotation: require('./stop-rotation'),
+  stopBarrelRotation: require('./stop-barrel-rotation'),
 };

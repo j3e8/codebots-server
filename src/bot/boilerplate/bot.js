@@ -136,4 +136,28 @@ class Bot {
       args: [color]
     })
   }
+
+  stop(cb) {
+    return prepareAndPostMessage({
+      obj: 'Bot',
+      fn: 'stop',
+      args: [],
+    }, cb);
+  }
+
+  stopRotation(cb) {
+    return prepareAndPostMessage({
+      obj: 'Bot',
+      fn: 'stopRotation',
+      args: [],
+    }, cb);
+  }
+
+  stopBarrelRotation(cb) {
+    return prepareAndPostMessage({
+      obj: 'Bot',
+      fn: 'stopBarrelRotation',
+      args: [],
+    }, cb);
+  }
 }

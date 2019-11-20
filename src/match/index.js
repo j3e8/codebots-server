@@ -120,6 +120,10 @@ class Match {
     this.lastFrame = thisFrame;
   }
 
+  cancelInstruction(obj) {
+    cancelInstructionsOfType.call(this, obj.bot, obj.type);
+  }
+
   endMatch(finished) {
     console.log('endMatch');
     this.ended = true;
