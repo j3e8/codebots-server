@@ -19,6 +19,7 @@ module.exports = function(callback) {
           },
           rotation: b.rotation,
           velocity: b.velocity,
+          alive: b.alive,
         }
       }),
       bullets: this.match.bullets.map((b) => {
