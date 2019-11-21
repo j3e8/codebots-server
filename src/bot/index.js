@@ -8,6 +8,7 @@ class Bot {
   constructor(env, owner, name, script) {
     this.id = getId();
     this.alive = true;
+    this.color = 'gray';
     this.name = name;
     this.owner = owner;
     this.match = null;
@@ -140,7 +141,7 @@ class Bot {
   onDied(bot, bullet) {
     this.worker.postMessage({
       fn: 'onDied',
-      args: [bot.getStatus(), bullet.getStatus()],
+      args: [bot.getStatus(), bullet ? bullet.getStatus() : undefined],
     });
   }
 
@@ -156,7 +157,7 @@ class Bot {
   onKill(bot, bullet) {
     this.worker.postMessage({
       fn: 'onKill',
-      args: [bot.getStatus(), bullet.getStatus()],
+      args: [bot.getStatus(), bullet ? bullet.getStatus() : undefined],
     });
   }
 

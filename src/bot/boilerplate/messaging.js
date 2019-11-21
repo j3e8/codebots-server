@@ -2,6 +2,9 @@ const { parentPort } = require('worker_threads');
 const __bot = new UserBotClassName();
 const __callbacks = {};
 
+const MESSAGES_PER_SECOND = 20;
+let messageHistory = [];
+
 parentPort.on('message', (message) => {
   // console.log('receiveMessage', JSON.stringify(message, null, 2));
   if (message.guid) { // this is a callback from webworker-initiated communication
@@ -18,12 +21,22 @@ parentPort.on('message', (message) => {
   }
 });
 
-function prepareAndPostMessage(data, callback) {
+function prepareAndPostMessage(data, callback, err) {
   // console.log('prepareAndPostMessage begin');
   let guid = makeGuid();
   let _data = Object.assign({}, data, { guid: guid });
 
   let isPromise = callback ? false : true;
+
+  if (isRateLimited(data)) {
+    if (isPromise) {
+      return Promise.reject("Rate limit");
+    } else if (err) {
+      err("Rate limit");
+    }
+    return;
+  }
+
   if (isPromise) {
     return new Promise((resolve, reject) => {
       __callbacks[guid] = resolve;
@@ -50,4 +63,18 @@ function makeGuid() {
     str += validChars[Math.floor(Math.random()*validChars.length)];
   }
   return str;
+}
+
+function isRateLimited(data) {
+  messageHistory.push({
+    data,
+    time: new Date().getTime(),
+  });
+  const oneSecondAgo = new Date().getTime() - 1000;
+  messageHistory = messageHistory.filter(m => m.time >= oneSecondAgo);
+  if (messageHistory.length > MESSAGES_PER_SECOND) {
+    console.log('-- RATE LIMIT --', messageHistory);
+    return true;
+  }
+  return false;
 }

@@ -25,108 +25,108 @@ class Bot {
     });
   }
 
-  fire(cb) {
+  fire(cb, err) {
     return prepareAndPostMessage({
       obj: 'Bot',
       fn: 'fire',
       args: []
-    }, cb);
+    }, cb, err);
   }
 
-  forward(d, cb) {
+  forward(d, cb, err) {
     return prepareAndPostMessage({
       obj: 'Bot',
       fn: 'forward',
       args: [d]
-    }, cb);
+    }, cb, err);
   }
 
-  getBarrelRotation(cb) {
+  getBarrelRotation(cb, err) {
     return prepareAndPostMessage({
       obj: 'Bot',
       fn: 'getBarrelRotation',
       args: []
-    }, cb);
+    }, cb, err);
   }
 
-  getLocation(cb) {
+  getLocation(cb, err) {
     return prepareAndPostMessage({
       obj: 'Bot',
       fn: 'getLocation',
       args: []
-    }, cb);
+    }, cb, err);
   }
 
-  getRotation(cb) {
+  getRotation(cb, err) {
     return prepareAndPostMessage({
       obj: 'Bot',
       fn: 'getRotation',
       args: []
-    }, cb);
+    }, cb, err);
   }
 
-  getStatus(cb) {
+  getStatus(cb, err) {
     return prepareAndPostMessage({
       obj: 'Bot',
       fn: 'getStatus',
       args: []
-    }, cb);
+    }, cb, err);
   }
 
-  reload(cb) {
+  reload(cb, err) {
     return prepareAndPostMessage({
       obj: 'Bot',
       fn: 'reload',
       args: []
-    }, cb);
+    }, cb, err);
   }
 
-  reverse(d, cb) {
+  reverse(d, cb, err) {
     return prepareAndPostMessage({
       obj: 'Bot',
       fn: 'reverse',
       args: [d]
-    }, cb);
+    }, cb, err);
   }
 
-  rotate(d, cb) {
+  rotate(d, cb, err) {
     return prepareAndPostMessage({
       obj: 'Bot',
       fn: 'rotate',
       args: [d]
-    }, cb);
+    }, cb, err);
   }
 
-  rotateBarrel(d, cb) {
+  rotateBarrel(d, cb, err) {
     return prepareAndPostMessage({
       obj: 'Bot',
       fn: 'rotateBarrel',
       args: [d]
-    }, cb);
+    }, cb, err);
   }
 
-  rotateTo(d, cb) {
+  rotateTo(d, cb, err) {
     return prepareAndPostMessage({
       obj: 'Bot',
       fn: 'rotateTo',
       args: [d]
-    }, cb);
+    }, cb, err);
   }
 
-  rotateBarrelTo(d, cb) {
+  rotateBarrelTo(d, cb, err) {
     return prepareAndPostMessage({
       obj: 'Bot',
       fn: 'rotateBarrelTo',
       args: [d]
-    }, cb);
+    }, cb, err);
   }
 
-  scan(cb) {
+  scan(cb, err) {
     return prepareAndPostMessage({
       obj: 'Bot',
       fn: 'scan',
       args: []
-    }, cb);
+    }, cb, err);
   }
 
   setColor(color) {
@@ -137,27 +137,27 @@ class Bot {
     })
   }
 
-  stop(cb) {
+  stop(cb, err) {
     return prepareAndPostMessage({
       obj: 'Bot',
       fn: 'stop',
       args: [],
-    }, cb);
+    }, cb, err);
   }
 
-  stopRotation(cb) {
+  stopRotation(cb, err) {
     return prepareAndPostMessage({
       obj: 'Bot',
       fn: 'stopRotation',
       args: [],
-    }, cb);
+    }, cb, err);
   }
 
-  stopBarrelRotation(cb) {
+  stopBarrelRotation(cb, err) {
     return prepareAndPostMessage({
       obj: 'Bot',
       fn: 'stopBarrelRotation',
       args: [],
-    }, cb);
+    }, cb, err);
   }
 }
