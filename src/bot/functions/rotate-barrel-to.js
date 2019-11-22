@@ -1,3 +1,5 @@
+ const utils = require('./function-utils');
+
 module.exports = function(degreeAngle, callback) {
   console.log('rotateBarrelTo');
   let ad = this.barrel.rotation / Math.PI * 180;
@@ -28,22 +30,16 @@ module.exports = function(degreeAngle, callback) {
 function rotateBarrelTo(angle, elapsedMs) {
   let r = this.barrel.rotationVelocity * elapsedMs;
 
-  // standardize angle to between 0 and Math.PI*2
-  while (this.barrel.rotation > Math.PI*2) {
-    this.barrel.rotation -= Math.PI*2;
-  }
-  while (this.barrel.rotation < 0) {
-    this.barrel.rotation += Math.PI*2;
-  }
-
   if ((this.barrel.rotation <= angle && this.barrel.rotation + r >= angle) || (this.barrel.rotation >= angle && this.barrel.rotation + r <= angle)) {
     this.barrel.rotationVelocity = 0;
     this.barrel.rotation = angle;
 
+    this.barrel.rotation = utils.standardizeAngle(this.barrel.rotation);
     return { finished: true };
   }
   else {
     this.barrel.rotation += r;
+    this.barrel.rotation = utils.standardizeAngle(this.barrel.rotation);
   }
   return { finished: false };
 }
