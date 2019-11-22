@@ -7,78 +7,24 @@ const getId = require('./get-id');
 class Bot {
   constructor(env, owner, name, script) {
     this.id = getId();
-    this.alive = true;
-    this.color = 'gray';
+    this.script = script;
+    this.match = null;
     this.name = name;
     this.owner = owner;
-    this.match = null;
-    this.worker = new Worker(script);
-    this.hp = 100;
+    this.color = 'gray'; // set some default in case the script never does
+
+    // Constants
     this.maxHp = 100;
     this.width = 3;
     this.height = 3.4054;
-    this.location = {
-      x: 0,
-      y: 0,
-    };
-    this.velocity = 0;
     this.maxVelocity = 0.015;
-    this.rotation = 0;
-    this.rotationVelocity = 0;
     this.maxRotationVelocity = 0.0004;
-    this.barrel = {
-      rotation: 0,
-      rotationVelocity: 0,
-      maxRotationVelocity: 0.0009,
-      height: 1.541,
-      width: 4.865,
-      length: 2.2,
-    };
     this.timeBetweenBullets = 1000; // ms
-    this.lastBulletFiredTime = 0; // timestamp
     this.scanDuration = 400; // ms
     this.crashDamage = 1;
     this.isLoaded = false;
 
     this.subscribers = {};
-
-    this.worker.postMessage({
-      fn: 'init',
-      args: [this.id, this.name],
-    });
-
-    const callback = (guid, fn, retval) => {
-      if (this.worker) {
-        this.worker.postMessage({
-          guid: guid,
-          fn: fn,
-          args: [ retval ]
-        });
-      }
-    }
-
-    this.worker.on("message", (message) => {
-      if (message.error) {
-        console.log('emitScriptError');
-        this.emitScriptError(message.error);
-      } else {
-        const args = message.args.concat([ callback.bind(this, message.guid, message.fn) ]);
-        if (message.obj == 'Bot' && BotFunctions[message.fn] && this.alive) {
-          console.log(`calling BotFunctions[${message.fn}]`);
-          BotFunctions[message.fn].apply(this, args);
-        } else if (message.obj === 'Arena' && ArenaFunctions[message.fn]) {
-          console.log(`calling ArenaFunctions[${message.fn}]`);
-          ArenaFunctions[message.fn].apply(this, args);
-        } else if (message.obj === 'Match' && MatchFunctions[message.fn]) {
-          console.log(`calling MatchFunctions[${message.fn}]`);
-          MatchFunctions[message.fn].apply(this, args);
-        }
-      }
-    });
-
-    this.worker.on("error", (err) => {
-      this.emitScriptError(err);
-    });
   }
 
   emitScriptError(err) {
@@ -229,6 +175,29 @@ class Bot {
     return false;
   }
 
+  prepareForMatch() {
+    this.alive = true;
+    this.hp = 100;
+    this.location = {
+      x: 0,
+      y: 0,
+    };
+    this.velocity = 0;
+    this.rotation = 0;
+    this.rotationVelocity = 0;
+    this.barrel = {
+      rotation: 0,
+      rotationVelocity: 0,
+      maxRotationVelocity: 0.0009,
+      height: 1.541,
+      width: 4.865,
+      length: 2.2,
+    };
+    this.lastBulletFiredTime = 0; // timestamp
+
+    this.setupWorker();
+  }
+
   reload() {
     this.isLoaded = true;
   }
@@ -241,6 +210,48 @@ class Bot {
 
   setMatch(m) {
     this.match = m;
+  }
+
+  setupWorker() {
+    this.worker = new Worker(this.script);
+
+    this.worker.postMessage({
+      fn: 'init',
+      args: [this.id, this.name],
+    });
+
+    const callback = (guid, fn, retval) => {
+      if (this.worker) {
+        this.worker.postMessage({
+          guid: guid,
+          fn: fn,
+          args: [ retval ]
+        });
+      }
+    }
+
+    this.worker.on("message", (message) => {
+      if (message.error) {
+        console.log('emitScriptError');
+        this.emitScriptError(message.error);
+      } else {
+        const args = message.args.concat([ callback.bind(this, message.guid, message.fn) ]);
+        if (message.obj == 'Bot' && BotFunctions[message.fn] && this.alive) {
+          console.log(`calling BotFunctions[${message.fn}]`);
+          BotFunctions[message.fn].apply(this, args);
+        } else if (message.obj === 'Arena' && ArenaFunctions[message.fn]) {
+          console.log(`calling ArenaFunctions[${message.fn}]`);
+          ArenaFunctions[message.fn].apply(this, args);
+        } else if (message.obj === 'Match' && MatchFunctions[message.fn]) {
+          console.log(`calling MatchFunctions[${message.fn}]`);
+          MatchFunctions[message.fn].apply(this, args);
+        }
+      }
+    });
+
+    this.worker.on("error", (err) => {
+      this.emitScriptError(err);
+    });
   }
 }
 

@@ -61,14 +61,17 @@ function animateMatches(matches) {
     // see if this match should still be active
     const activeSocket = m.room.players.find(p => p.socket);
     if (!activeSocket) {
+      console.log('No active sockets');
       m.endMatch();
     }
 
     if (m.ended) {
       console.log('terminate workers');
       m.room.players.forEach((player) => {
-        player.bot.worker.terminate()
-        player.bot.worker = null;
+        if (player.bot) {
+          player.bot.worker.terminate()
+          player.bot.worker = null;
+        }
       });
       console.log('splice that match');
       matches.splice(i, 1);

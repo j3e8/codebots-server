@@ -6,6 +6,5 @@ module.exports = function stopMatch(env, player) {
   }
   match.endMatch(false);
 
-  // remove match from the server's environment
-  env.matches.splice(env.matches.indexOf(match), 1);
+  // the match will have its workers terminated and will be properly removed from the server on the next cycle of the event loop
 }

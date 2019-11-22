@@ -4,12 +4,8 @@ const cancelInstructionsOfType = require('./cancel-instructions-of-type');
 
 class Match {
   constructor(env, room, arena) {
-    this.instructionQueue = [];
     this.arena = arena;
-    this.bots = room.bots;
-    this.bullets = [];
     this.room = room;
-    this.ended = false;
   }
 
   addInstruction(obj, callback) {
@@ -24,6 +20,7 @@ class Match {
 
   animateFrame() {
     if (this.ended) {
+      console.log('skip animateFrame. match ended.');
       return;
     }
 
@@ -162,7 +159,12 @@ class Match {
   }
 
   startMatch(env) {
+    this.instructionQueue = [];
+    this.bots = this.room.bots;
+    this.bots.forEach(bot => bot.prepareForMatch());
+    this.bullets = [];
     this.ended = false;
+
     this.startTime = new Date().getTime();
     this.endTime = null;
     this.bots.forEach((bot, i) => {
