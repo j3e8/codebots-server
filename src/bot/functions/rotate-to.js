@@ -37,7 +37,6 @@ function rotateTo(angle, elapsedMs) {
   }
   else {
     this.rotation += r;
-    this.rotation = utils.standardizeAngle(this.rotation);
   }
   return { finished: false };
 }
