@@ -57,6 +57,13 @@ function emitStatus(socket, status) {
 function animateMatches(matches) {
   for (let i=0; i < matches.length; i++) {
     const m = matches[i];
+
+    // see if this match should still be active
+    const activeSocket = m.room.players.find(p => p.socket);
+    if (!activeSocket) {
+      m.endMatch();
+    }
+
     if (m.ended) {
       console.log('terminate workers');
       m.room.players.forEach((player) => {
@@ -68,7 +75,7 @@ function animateMatches(matches) {
       i--;
     } else {
       m.animateFrame();
-      m.room.players.map((c) => emitStatus(c.socket, m.getStatus()));
+      m.room.players.map(p => emitStatus(p.socket, m.getStatus()));
     }
   }
 }
