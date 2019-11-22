@@ -1,6 +1,8 @@
+const utils = require('./function-utils');
+
 module.exports = function(degreeAngle, callback) {
   let ad = this.rotation / Math.PI * 180;
-  let angle = degreeAngle/180 * Math.PI;
+  let angle = utils.degreeToRadian(degreeAngle);
 
   // standardize angle to less than Math.PI away from this.rotation (shortest direction)
   while (angle < this.rotation - Math.PI) {
@@ -26,22 +28,16 @@ module.exports = function(degreeAngle, callback) {
 
 function rotateTo(angle, elapsedMs) {
   let r = this.rotationVelocity * elapsedMs;
-  if ((this.rotation < angle && this.rotation + r >= angle) || (this.rotation > angle && this.rotation + r <= angle)) {
+  if ((this.rotation <= angle && this.rotation + r >= angle) || (this.rotation >= angle && this.rotation + r <= angle)) {
     this.rotationVelocity = 0;
     this.rotation = angle;
 
-    // standardize angle to between 0 and Math.PI*2
-    while (this.rotation > Math.PI*2) {
-      this.rotation -= Math.PI*2;
-    }
-    while (this.rotation < 0) {
-      this.rotation += Math.PI*2;
-    }
-
+    this.rotation = utils.standardizeAngle(this.rotation);
     return { finished: true };
   }
   else {
     this.rotation += r;
+    this.rotation = utils.standardizeAngle(this.rotation);
   }
   return { finished: false };
 }
