@@ -38,7 +38,6 @@ function rotateBarrelTo(angle, elapsedMs) {
   }
   else {
     this.barrel.rotation += r;
-    this.barrel.rotation = utils.standardizeAngle(this.barrel.rotation);
   }
   return { finished: false };
 }
