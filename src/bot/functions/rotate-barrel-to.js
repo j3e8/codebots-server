@@ -3,7 +3,7 @@
 module.exports = function(degreeAngle, callback) {
   console.log('rotateBarrelTo');
   let ad = this.barrel.rotation / Math.PI * 180;
-  let angle = ((degreeAngle+360) % 360) /180 * Math.PI; //Convert to radian, making negative angles positive
+  let angle = utils.degreeToRadian(degreeAngle);
 
   // standardize angle to less than Math.PI away from this.barrel.rotation (shortest direction)
   while (angle < this.barrel.rotation - Math.PI) {
@@ -29,7 +29,6 @@ module.exports = function(degreeAngle, callback) {
 
 function rotateBarrelTo(angle, elapsedMs) {
   let r = this.barrel.rotationVelocity * elapsedMs;
-
   if ((this.barrel.rotation <= angle && this.barrel.rotation + r >= angle) || (this.barrel.rotation >= angle && this.barrel.rotation + r <= angle)) {
     this.barrel.rotationVelocity = 0;
     this.barrel.rotation = angle;

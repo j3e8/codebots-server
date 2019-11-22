@@ -2,7 +2,7 @@ const utils = require('./function-utils');
 
 module.exports = function(degreeAngle, callback) {
   let ad = this.rotation / Math.PI * 180;
-  let angle = degreeAngle/180 * Math.PI;
+  let angle = utils.degreeToRadian(degreeAngle);
 
   // standardize angle to less than Math.PI away from this.rotation (shortest direction)
   while (angle < this.rotation - Math.PI) {
