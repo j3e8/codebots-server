@@ -8,20 +8,23 @@ module.exports = function(callback) {
   this.isScanning = true;
   setTimeout(() => {
     this.isScanning = false;
+    const bots = this.match.bots.map((b) => {
+      return {
+        id: b.id,
+        hp: b.hp,
+        location: {
+          x: b.location.x,
+          y: b.location.y,
+        },
+        rotation: b.rotation,
+        velocity: b.velocity,
+        alive: b.alive,
+      }
+    });
+    bots.sort((a, b) => Math.random() < 0.5 ? -1 : 1);
+
     let results = {
-      bots: this.match.bots.map((b) => {
-        return {
-          id: b.id,
-          hp: b.hp,
-          location: {
-            x: b.location.x,
-            y: b.location.y,
-          },
-          rotation: b.rotation,
-          velocity: b.velocity,
-          alive: b.alive,
-        }
-      }),
+      bots,
       bullets: this.match.bullets.map((b) => {
         return {
           damage: b.damage,
