@@ -241,10 +241,10 @@ class Bot {
           BotFunctions[message.fn].apply(this, args);
         } else if (message.obj === 'Arena' && ArenaFunctions[message.fn]) {
           console.log(`calling ArenaFunctions[${message.fn}]`);
-          ArenaFunctions[message.fn].apply(this, args);
+          ArenaFunctions[message.fn].apply(this.match.arena, args);
         } else if (message.obj === 'Match' && MatchFunctions[message.fn]) {
           console.log(`calling MatchFunctions[${message.fn}]`);
-          MatchFunctions[message.fn].apply(this, args);
+          MatchFunctions[message.fn].apply(this.match, args);
         }
       }
     });

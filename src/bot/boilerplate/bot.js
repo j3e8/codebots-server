@@ -1,23 +1,27 @@
 class Bot {
-
   static get GREEN() { return 'green'; }
   static get BLUE() { return 'blue'; }
   static get GRAY() { return 'gray'; }
   static get TAN() { return 'tan'; }
   static get RED() { return 'red'; }
 
-  constructor() { }
+  constructor() {
+    // fun little overrides
+    console.log = this.log;
+    console.warn = this.log;
+    console.error = this.log;
+    console.trace = () => this.log("console.trace is not allowed in Bot worker class");
+  }
 
-  broadcast(msg) {
+  broadcast(msg, cb, err) {
     return prepareAndPostMessage({
       obj: 'Bot',
       fn: 'broadcast',
       args: [msg]
-    });
+    }, cb, err);
   }
 
   log(...args) {
-    console.log('bot.js', ...args);
     return prepareAndPostMessage({
       obj: 'Bot',
       fn: 'log',

@@ -1,6 +1,6 @@
 const Arena = {
   getDimensions: (cb, err) => {
-    prepareAndPostMessage({
+    return prepareAndPostMessage({
       obj: 'Arena',
       fn: 'getDimensions',
       args: []
