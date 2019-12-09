@@ -85,6 +85,9 @@ class Bot {
 
   /* You died. This is who killed you */
   onDied(bot, bullet) {
+    this.stats.killer = bot ? bot.getBotData() : null;
+    const livingBots = this.match.room.bots.filter(b => b.alive);
+    this.stats.rank = livingBots.length + 1;
     this.worker.postMessage({
       fn: 'onDied',
       args: [bot.getStatus(), bullet ? bullet.getStatus() : undefined],
@@ -93,6 +96,7 @@ class Bot {
 
   /* This bot's bullet hit another bot */
   onHit(bot, bullet) {
+    this.stats.hits++;
     this.worker.postMessage({
       fn: 'onHit',
       args: [bot.getStatus(), bullet.getStatus()],
@@ -101,6 +105,7 @@ class Bot {
 
   /* You killed some other bot */
   onKill(bot, bullet) {
+    this.stats.kills++;
     this.worker.postMessage({
       fn: 'onKill',
       args: [bot.getStatus(), bullet ? bullet.getStatus() : undefined],
@@ -131,7 +136,12 @@ class Bot {
     });
   }
 
+  onWin() {
+    this.stats.rank = 1;
+  }
+
   fireBullet(b) {
+    this.stats.bulletsFired++;
     this.lastBulletFiredTime = new Date().getTime();
     this.isLoaded = false;
     this.match.fireBullet(b);
@@ -142,7 +152,8 @@ class Bot {
       id: this.id,
       playerName: this.owner ? this.owner.name : 'Cmp',
       name: this.name,
-      color: this.color
+      color: this.color,
+      stats: this.stats,
     }
   }
 
@@ -194,6 +205,14 @@ class Bot {
       length: 2.2,
     };
     this.lastBulletFiredTime = 0; // timestamp
+
+    this.stats = {
+      hits: 0,
+      bulletsFired: 0,
+      kills: 0,
+      killer: null,
+      rank: null,
+    };
 
     this.setupWorker();
   }

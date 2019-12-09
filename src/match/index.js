@@ -111,6 +111,7 @@ class Match {
     // test if the match is over
     let aliveBots = this.bots.filter((b) => b.alive);
     if (aliveBots.length <= 1) {
+      aliveBots.forEach(b => b.onWin());
       this.endMatch(true);
     }
 
@@ -125,13 +126,14 @@ class Match {
     console.log('endMatch');
     this.ended = true;
     this.endTime = new Date().getTime();
-    const winner = finished ? this.bots.find(b => b.alive) : null;
+    const rankings = finished ? this.bots.map(b => b.getBotData()) : null;
+
     this.room.players.forEach((player) => {
       if (player.socket) {
         player.socket.emit('matchEnded', {
           results: {
             status: finished ? 'finished' : 'canceled',
-            winner: winner ? winner.getBotData() : null,
+            rankings,
             elapsedTime: this.endTime - this.startTime,
           },
         });
