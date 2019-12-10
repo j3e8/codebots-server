@@ -14,7 +14,7 @@ module.exports = function(degreeAngle, callback) {
   }
 
   // set velocity (with sign for direction)
-  this.barrel.rotationVelocity = this.maxRotationVelocity;
+  this.barrel.rotationVelocity = this.barrel.maxRotationVelocity;
   if (angle < this.barrel.rotation) {
     this.barrel.rotationVelocity = -this.barrel.rotationVelocity;
   }
