@@ -1,7 +1,6 @@
  const utils = require('./function-utils');
 
 module.exports = function(degreeAngle, callback) {
-  console.log('rotateBarrelTo');
   let ad = this.barrel.rotation / Math.PI * 180;
   let angle = utils.degreeToRadian(degreeAngle);
 

@@ -16,7 +16,7 @@ module.exports = function(callback) {
           x: b.location.x,
           y: b.location.y,
         },
-        rotation: b.rotation,
+        rotation: b.rotation / Math.PI * 180,
         velocity: b.velocity,
         alive: b.alive,
       }
@@ -32,7 +32,7 @@ module.exports = function(callback) {
             x: b.location.x,
             y: b.location.y,
           },
-          angle: b.angle,
+          angle: b.angle / Math.PI * 180,
           velocity: b.velocity,
         };
       }),

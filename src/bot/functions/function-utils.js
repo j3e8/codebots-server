@@ -12,7 +12,7 @@ const standardizeAngle = function(radianAngle) {
 
 // Convert to radian, making negative angles positive
 const degreeToRadian = function(degreeAngle){
-  return ( (degreeAngle + 360) % 360) / 180 * Math.PI;
+  return ((Number(degreeAngle) + 360) % 360) / 180 * Math.PI;
 }
 
 module.exports = {
