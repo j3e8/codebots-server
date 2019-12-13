@@ -96,7 +96,9 @@ class Match {
         if (bot.hitTest(bullet)) {
           let botAlive = bot.alive;
           bot.onShot(bullet.owner, bullet); // react to being shot
-          bullet.owner.onHit(bot, bullet); // acknowledge that you hit someone
+          if (botAlive) {
+            bullet.owner.onHit(bot, bullet); // acknowledge that you hit someone
+          }
           if (botAlive !== bot.alive) {
             bot.onDied(bullet.owner, bullet);
             bullet.owner.onKill(bot, bullet); // acknowledge the kill
