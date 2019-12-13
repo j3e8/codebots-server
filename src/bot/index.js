@@ -53,6 +53,7 @@ class Bot {
   }
 
   crashTest(bot) {
+    // TODO
     let sqd = (bot.location.x - this.location.x)*(bot.location.x - this.location.x) + (bot.location.y - this.location.y)*(bot.location.y - this.location.y);
     let r1 = Math.min(this.width, this.height) / 2;
     let r2 = Math.min(bot.width, bot.height) / 2;
@@ -77,7 +78,7 @@ class Bot {
     if (!this.alive) {
       return;
     }
-    this.worker.postMessage({
+    this.worker && this.worker.postMessage({
       fn: 'onCrash',
       args: [otherBot.getStatus()],
     });
@@ -88,7 +89,7 @@ class Bot {
     this.stats.killer = bot ? bot.getBotData() : null;
     const livingBots = this.match.room.bots.filter(b => b.alive);
     this.stats.rank = livingBots.length + 1;
-    this.worker.postMessage({
+    this.worker && this.worker.postMessage({
       fn: 'onDied',
       args: [bot.getStatus(), bullet ? bullet.getStatus() : undefined],
     });
@@ -97,7 +98,7 @@ class Bot {
   /* This bot's bullet hit another bot */
   onHit(bot, bullet) {
     this.stats.hits++;
-    this.worker.postMessage({
+    this.worker && this.worker.postMessage({
       fn: 'onHit',
       args: [bot.getStatus(), bullet.getStatus()],
     });
@@ -106,7 +107,7 @@ class Bot {
   /* You killed some other bot */
   onKill(bot, bullet) {
     this.stats.kills++;
-    this.worker.postMessage({
+    this.worker && this.worker.postMessage({
       fn: 'onKill',
       args: [bot.getStatus(), bullet ? bullet.getStatus() : undefined],
     });
@@ -118,7 +119,7 @@ class Bot {
     if (!this.alive) {
       return;
     }
-    this.worker.postMessage({
+    this.worker && this.worker.postMessage({
       fn: 'onShot',
       args: [bot.getStatus(), bullet.getStatus()],
     });
@@ -130,7 +131,7 @@ class Bot {
     if (!this.alive) {
       return;
     }
-    this.worker.postMessage({
+    this.worker && this.worker.postMessage({
       fn: 'onWallBump',
       args: [],
     });
@@ -234,14 +235,14 @@ class Bot {
   setupWorker() {
     this.worker = new Worker(this.script);
 
-    this.worker.postMessage({
+    this.worker && this.worker.postMessage({
       fn: 'init',
       args: [this.id, this.name],
     });
 
     const callback = (guid, fn, retval) => {
       if (this.worker) {
-        this.worker.postMessage({
+        this.worker && this.worker.postMessage({
           guid: guid,
           fn: fn,
           args: [ retval ]
