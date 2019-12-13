@@ -2,7 +2,7 @@ const { parentPort } = require('worker_threads');
 const __bot = new UserBotClassName();
 const __callbacks = {};
 
-const MESSAGES_PER_SECOND = 20;
+const MESSAGES_PER_SECOND = 50;
 let messageHistory = [];
 
 parentPort.on('message', (message) => {
