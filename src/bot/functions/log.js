@@ -1,7 +1,16 @@
 module.exports = function(...args) {
+  const argsToLog = args.slice(0, args.length - 1);
+  const callback = args[args.length - 1];
+
   // broadcast the message to this bot's client
-  this.owner.socket.emit('scriptLog', {
-    bot: this.getBotData(),
-    message: args,
-  });
+  try {
+    this.owner.socket && this.owner.socket.emit('scriptLog', {
+      bot: this.getBotData(),
+      message: args,
+    });
+  } catch (ex) {
+    err(ex);
+  }
+
+  callback();
 }

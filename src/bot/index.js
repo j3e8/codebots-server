@@ -242,7 +242,7 @@ class Bot {
 
     const callback = (guid, fn, retval) => {
       if (this.worker) {
-        this.worker && this.worker.postMessage({
+        this.worker.postMessage({
           guid: guid,
           fn: fn,
           args: [ retval ]
@@ -256,13 +256,13 @@ class Bot {
         this.emitScriptError(message.error);
       } else {
         const args = message.args.concat([ callback.bind(this, message.guid, message.fn) ]);
-        if (message.obj == 'Bot' && BotFunctions[message.fn] && this.alive) {
+        if (message.obj == 'Bot' && BotFunctions[message.fn] && this.alive && this.worker) {
           console.log(`calling BotFunctions[${message.fn}]`);
           BotFunctions[message.fn].apply(this, args);
-        } else if (message.obj === 'Arena' && ArenaFunctions[message.fn]) {
+        } else if (message.obj === 'Arena' && ArenaFunctions[message.fn] && this.worker) {
           console.log(`calling ArenaFunctions[${message.fn}]`);
           ArenaFunctions[message.fn].apply(this.match.arena, args);
-        } else if (message.obj === 'Match' && MatchFunctions[message.fn]) {
+        } else if (message.obj === 'Match' && MatchFunctions[message.fn] && this.worker) {
           console.log(`calling MatchFunctions[${message.fn}]`);
           MatchFunctions[message.fn].apply(this.match, args);
         }

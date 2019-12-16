@@ -42,10 +42,10 @@ function prepareAndPostMessage(data, callback, err) {
       __callbacks[guid] = resolve;
       parentPort.postMessage(_data);
     })
-    .catch((err) => {
-      console.error(`Worker promise error`, data, err);
+    .catch((e) => {
+      console.error(`Worker promise error`, data, e);
       parentPort.postMessage({
-        error: err.toString(),
+        error: e.toString(),
       });
     });
   }
