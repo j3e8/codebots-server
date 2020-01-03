@@ -78,10 +78,12 @@ class Bot {
     if (!this.alive) {
       return;
     }
-    this.worker && this.worker.postMessage({
-      fn: 'onCrash',
-      args: [otherBot.getStatus()],
-    });
+    try {
+      this.worker && this.worker.postMessage({
+        fn: 'onCrash',
+        args: [otherBot.getStatus()],
+      });
+    } catch (ex) { }
   }
 
   /* You died. This is who killed you */
@@ -89,28 +91,34 @@ class Bot {
     this.stats.killer = bot ? bot.getBotData() : null;
     const livingBots = this.match.room.bots.filter(b => b.alive);
     this.stats.rank = livingBots.length + 1;
-    this.worker && this.worker.postMessage({
-      fn: 'onDied',
-      args: [bot.getStatus(), bullet ? bullet.getStatus() : undefined],
-    });
+    try {
+      this.worker && this.worker.postMessage({
+        fn: 'onDied',
+        args: [bot.getStatus(), bullet ? bullet.getStatus() : undefined],
+      });
+    } catch (ex) { }
   }
 
   /* This bot's bullet hit another bot */
   onHit(bot, bullet) {
     this.stats.hits++;
-    this.worker && this.worker.postMessage({
-      fn: 'onHit',
-      args: [bot.getStatus(), bullet.getStatus()],
-    });
+    try {
+      this.worker && this.worker.postMessage({
+        fn: 'onHit',
+        args: [bot.getStatus(), bullet.getStatus()],
+      });
+    } catch (ex) { }
   }
 
   /* You killed some other bot */
   onKill(bot, bullet) {
     this.stats.kills++;
-    this.worker && this.worker.postMessage({
-      fn: 'onKill',
-      args: [bot.getStatus(), bullet ? bullet.getStatus() : undefined],
-    });
+    try {
+      this.worker && this.worker.postMessage({
+        fn: 'onKill',
+        args: [bot.getStatus(), bullet ? bullet.getStatus() : undefined],
+      });
+    } catch (ex) { }
   }
 
   /* This bot was shot by another */
@@ -119,10 +127,12 @@ class Bot {
     if (!this.alive) {
       return;
     }
-    this.worker && this.worker.postMessage({
-      fn: 'onShot',
-      args: [bot.getStatus(), bullet.getStatus()],
-    });
+    try {
+      this.worker && this.worker.postMessage({
+        fn: 'onShot',
+        args: [bot.getStatus(), bullet.getStatus()],
+      });
+    } catch (ex) { }
   }
 
   onWallBump() {
@@ -131,10 +141,12 @@ class Bot {
     if (!this.alive) {
       return;
     }
-    this.worker && this.worker.postMessage({
-      fn: 'onWallBump',
-      args: [],
-    });
+    try {
+      this.worker && this.worker.postMessage({
+        fn: 'onWallBump',
+        args: [],
+      });
+    } catch (ex) { }
   }
 
   onWin() {
@@ -155,6 +167,7 @@ class Bot {
       name: this.name,
       color: this.color,
       stats: this.stats,
+      seized: this.seized,
     }
   }
 
@@ -170,7 +183,8 @@ class Bot {
       color: this.color,
       hp: this.hp,
       maxHp: this.maxHp,
-      alive: this.alive
+      alive: this.alive,
+      seized: this.seized,
     }
   }
 
@@ -235,18 +249,22 @@ class Bot {
   setupWorker() {
     this.worker = new Worker(this.script);
 
-    this.worker && this.worker.postMessage({
-      fn: 'init',
-      args: [this.id, this.name],
-    });
+    try {
+      this.worker && this.worker.postMessage({
+        fn: 'init',
+        args: [this.id, this.name],
+      });
+    } catch (ex) { }
 
     const callback = (guid, fn, retval) => {
       if (this.worker) {
-        this.worker.postMessage({
-          guid: guid,
-          fn: fn,
-          args: [ retval ]
-        });
+        try {
+          this.worker.postMessage({
+            guid: guid,
+            fn: fn,
+            args: [ retval ]
+          });
+        } catch (ex) { }
       }
     }
 
@@ -270,7 +288,13 @@ class Bot {
     });
 
     this.worker.on("error", (err) => {
-      this.emitScriptError(err);
+      try {
+        this.emitScriptError(err);
+        this.worker.terminate();
+        this.seized = true;
+      } catch(ex) {
+        console.error("Couldn't terminate worker after error", ex);
+      }
     });
   }
 }

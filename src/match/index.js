@@ -140,11 +140,13 @@ class Match {
           },
         });
       }
-      if (player.bot) {
-        player.bot.worker.postMessage({
-          fn: 'end',
-          args: [],
-        });
+      if (player.bot && player.bot.worker) {
+        try {
+          player.bot.worker.postMessage({
+            fn: 'end',
+            args: [],
+          });
+        } catch (ex) { }
       }
     });
   }
@@ -176,10 +178,14 @@ class Match {
       bot.location = chooseStartingPoint(this.arena, bot, this.bots.slice(0, i));
       bot.rotation = Math.random() * Math.PI * 2;
 
-      bot.worker.postMessage({
-        fn: 'start',
-        args: []
-      });
+      if (bot.worker) {
+        try {
+          bot.worker.postMessage({
+            fn: 'start',
+            args: []
+          });
+        } catch (ex) { }
+      }
     });
     env.matches.push(this);
     this.room.players.forEach((player) => {
