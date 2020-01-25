@@ -17,6 +17,7 @@ module.exports = function(callback) {
           y: b.location.y,
         },
         rotation: b.rotation / Math.PI * 180,
+        barrelRotation: b.barrel.rotation / Math.PI * 180,
         velocity: b.velocity,
         alive: b.alive,
       }

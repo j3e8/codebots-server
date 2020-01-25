@@ -4,6 +4,9 @@ class Bot {
   static get GRAY() { return 'gray'; }
   static get TAN() { return 'tan'; }
   static get RED() { return 'red'; }
+  static get ORANGE() { return 'orange'; }
+  static get PINK() { return 'pink'; }
+  static get PURPLE() { return 'purple'; }
 
   constructor() {
     // fun little overrides

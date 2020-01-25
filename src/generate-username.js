@@ -8,7 +8,17 @@ const usernames = [
   'Mr. Bean',
   'Dummy Dum Dums',
   'Chris',
-  'Leroy'
+  'Leroy',
+  'El Presidente',
+  'T-bone',
+  'TJ',
+  'Betty',
+  'Tanky',
+  'Suzette',
+  'Chuck',
+  'Kingsley',
+  'Stefan',
+  'Billy Bob Joe',
 ];
 
 module.exports = function() {
