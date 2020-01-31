@@ -4,12 +4,12 @@ module.exports = function(...args) {
 
   // broadcast the message to this bot's client
   try {
-    this.owner.socket && this.owner.socket.emit('scriptLog', {
+    this.owner && this.owner.socket && this.owner.socket.emit('scriptLog', {
       bot: this.getBotData(),
       message: args,
     });
   } catch (ex) {
-    err(ex);
+    console.error('Error in logging', ex);
   }
 
   callback();

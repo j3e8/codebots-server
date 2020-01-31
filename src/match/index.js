@@ -20,7 +20,6 @@ class Match {
 
   animateFrame() {
     if (this.ended) {
-      console.log('skip animateFrame. match ended.');
       return;
     }
 
@@ -125,7 +124,6 @@ class Match {
   }
 
   endMatch(finished) {
-    console.log('endMatch');
     this.ended = true;
     this.endTime = new Date().getTime();
     const rankings = finished ? this.bots.map(b => b.getBotData()) : null;

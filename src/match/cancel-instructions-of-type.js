@@ -3,6 +3,10 @@ module.exports = function cancelInstructionsOfType(bot, type) {
   this.instructionQueue.forEach((instr, i) => {
     if (instr.bot == bot && instr.type == type) {
       this.instructionQueue.splice(i, 1);
+
+      if (instr.callback) {
+        instr.callback();
+      }
     }
   });
 }
