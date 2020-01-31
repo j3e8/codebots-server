@@ -91,6 +91,7 @@ class Bot {
     this.stats.killer = bot ? bot.getBotData() : null;
     const livingBots = this.match.room.bots.filter(b => b.alive);
     this.stats.rank = livingBots.length + 1;
+    this.stats.points = (this.match.room.bots.length - this.stats.rank) + this.stats.kills;
     try {
       this.worker && this.worker.postMessage({
         fn: 'onDied',
@@ -151,6 +152,7 @@ class Bot {
 
   onWin() {
     this.stats.rank = 1;
+    this.stats.points = (this.match.room.bots.length - 1) + this.stats.kills;
   }
 
   fireBullet(b) {
@@ -228,6 +230,7 @@ class Bot {
       kills: 0,
       killer: null,
       rank: null,
+      points: 0,
     };
 
     this.setupWorker();

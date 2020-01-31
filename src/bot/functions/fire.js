@@ -10,7 +10,6 @@ module.exports = function(callback) {
   }
 
   let b = new Bullet(this);
-  console.log('fireBullet');
   this.fireBullet(b);
   if (callback) {
     callback(true);
