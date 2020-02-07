@@ -127,6 +127,7 @@ class Match {
     this.ended = true;
     this.endTime = new Date().getTime();
     const rankings = finished ? this.bots.map(b => b.getBotData()) : null;
+    this.bots.forEach(bot => bot.accumulatePoints);
 
     this.room.players.forEach((player) => {
       if (player.socket) {
@@ -160,6 +161,10 @@ class Match {
       bullets: this.bullets.map((b) => b.getStatus()),
       elapsedTime: (this.endTime || new Date().getTime()) - this.startTime
     }
+  }
+
+  resetMatchStats() {
+    this.room.bots.forEach(bot => bot.resetCumulativePoints())
   }
 
   startMatch(env) {

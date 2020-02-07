@@ -27,6 +27,10 @@ class Bot {
     this.subscribers = {};
   }
 
+  accumulatePoints() {
+    this.stats.cumulativePoints += this.stats.points;
+  }
+
   emitScriptError(err) {
     console.error('Worker script error:', err);
     if (this.owner && this.owner.socket) {
@@ -231,6 +235,7 @@ class Bot {
       killer: null,
       rank: null,
       points: 0,
+      cumulativePoints: this.stats ? this.stats.cumulativePoints : 0,
     };
 
     this.setupWorker();
@@ -238,6 +243,10 @@ class Bot {
 
   reload() {
     this.isLoaded = true;
+  }
+
+  resetCumulativePoints() {
+    this.stats.cumulativePoints = 0;
   }
 
   revertMove() {
