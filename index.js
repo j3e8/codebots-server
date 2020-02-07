@@ -46,7 +46,6 @@ const selectBot = require('./src/select-bot');
 const selectCmpBot = require('./src/select-cmp-bot');
 const startMatch = require('./src/start-match');
 const stopMatch = require('./src/stop-match');
-const resetMatchStats = require('./src/reset-match-stats');
 
 function emitStatus(socket, status) {
   if (!socket) {
@@ -105,5 +104,4 @@ io.on('connection', function(socket) {
   socket.on('selectCmpBot', selectCmpBot.bind(this, env, player));
   socket.on('startMatch', startMatch.bind(this, env, player));
   socket.on('stopMatch', stopMatch.bind(this, env, player));
-  socket.on('resetMatchStats', resetMatchStats.bind(this, env, player));
 });
