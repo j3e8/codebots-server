@@ -18,9 +18,11 @@ module.exports = function(msgstring) {
 
   // broadcast the message to each players' socket too
   this.match.room.players.forEach((player) => {
-    player.socket.emit('broadcast', {
-      bot: thisBot.getBotData(),
-      message: msgstring
-    });
-  })
+    if (player.socket) {
+      player.socket.emit('broadcast', {
+        bot: thisBot.getBotData(),
+        message: msgstring
+      });
+    }
+  });
 }
