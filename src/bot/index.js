@@ -297,6 +297,7 @@ class Bot {
     });
 
     this.worker.on("error", (err) => {
+      console.log("this.worker.on('error')");
       try {
         this.emitScriptError(err);
         this.worker.terminate();
