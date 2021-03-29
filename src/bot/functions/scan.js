@@ -11,6 +11,7 @@ module.exports = function(callback) {
     const bots = this.match.bots.map((b) => {
       return {
         id: b.id,
+        name: b.name,
         hp: b.hp,
         location: {
           x: b.location.x,
