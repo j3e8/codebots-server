@@ -185,12 +185,25 @@ class Bot {
       height: this.height,
       location: this.location,
       rotation: this.rotation,
-      barrel: Object.assign({}, this.barrel),
+      barrel: {
+        height: this.barrel.height,
+        length: this.barrel.length,
+        width: this.barrel.width,
+        rotation: this.barrel.rotation,
+        rotationVelocityInMs: this.barrel.rotationVelocity / Math.PI * 180,
+        maxRotationVelocityInMs: this.barrel.maxRotationVelocity / Math.PI * 180,
+      },
       color: this.color,
       hp: this.hp,
-      maxHp: this.maxHp,
       alive: this.alive,
       seized: this.seized,
+      maxHp: this.maxHp,
+      velocityPerMs: this.maxVelocity,
+      maxVelocityPerMs: this.maxVelocity,
+      rotationVelocityPerMs: this.rotationVelocity / Math.PI * 180,
+      maxRotationVelocityPerMs: this.maxRotationVelocity / Math.PI * 180,
+      reloadTimeInMs: this.timeBetweenBullets,
+      scanDurationInMs: this.scanDuration,
     }
   }
 
