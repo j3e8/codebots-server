@@ -70,11 +70,20 @@ function isRateLimited(data) {
     data,
     time: new Date().getTime(),
   });
+
+  if (messageHistory.length <= MESSAGES_PER_SECOND) {
+    return false;
+  }
+
+  // Trim the array down to only MESSAGES_PER_SECOND + 1 in length because nothing else matters
+  messageHistory = messageHistory.slice(messageHistory.length - (MESSAGES_PER_SECOND + 1));
+
+  // Check the (MESSAGES_PER_SECOND + 1)th most recent message. If it's within the last second we've hit the rate limit
   const oneSecondAgo = new Date().getTime() - 1000;
-  messageHistory = messageHistory.filter(m => m.time >= oneSecondAgo);
-  if (messageHistory.length > MESSAGES_PER_SECOND) {
+  if (messageHistory[messageHistory.length - (MESSAGES_PER_SECOND + 1)].time >= oneSecondAgo) {
     console.log('-- RATE LIMIT --', messageHistory);
     return true;
   }
+
   return false;
 }
