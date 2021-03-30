@@ -184,13 +184,26 @@ class Bot {
       width: this.width,
       height: this.height,
       location: this.location,
-      rotation: this.rotation,
-      barrel: Object.assign({}, this.barrel),
+      rotation: this.rotation / Math.PI * 180,
+      barrel: {
+        height: this.barrel.height,
+        length: this.barrel.length,
+        width: this.barrel.width,
+        rotation: this.barrel.rotation / Math.PI * 180,
+        rotationVelocityPerMs: this.barrel.rotationVelocity / Math.PI * 180,
+        maxRotationVelocityPerMs: this.barrel.maxRotationVelocity / Math.PI * 180,
+      },
       color: this.color,
       hp: this.hp,
-      maxHp: this.maxHp,
       alive: this.alive,
       seized: this.seized,
+      maxHp: this.maxHp,
+      velocityPerMs: this.maxVelocity,
+      maxVelocityPerMs: this.maxVelocity,
+      rotationVelocityPerMs: this.rotationVelocity / Math.PI * 180,
+      maxRotationVelocityPerMs: this.maxRotationVelocity / Math.PI * 180,
+      reloadTimeInMs: this.timeBetweenBullets,
+      scanDurationInMs: this.scanDuration,
     }
   }
 
@@ -260,7 +273,9 @@ class Bot {
   }
 
   setupWorker() {
-    this.worker = new Worker(this.script);
+    this.worker = new Worker(this.script, {
+      execArgv: ['--unhandled-rejections=strict'],
+    });
 
     try {
       this.worker && this.worker.postMessage({
@@ -297,6 +312,7 @@ class Bot {
     });
 
     this.worker.on("error", (err) => {
+      console.log("this.worker.on('error')");
       try {
         this.emitScriptError(err);
         this.worker.terminate();

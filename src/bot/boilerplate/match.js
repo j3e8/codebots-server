@@ -1,9 +1,9 @@
 const Match = {
-  getBots: (cb, err) => {
+  getBots: () => {
     return prepareAndPostMessage({
       obj: 'Match',
       fn: 'getBots',
       args: []
-    }, cb, err);
+    });
   }
 }

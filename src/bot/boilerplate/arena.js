@@ -1,9 +1,9 @@
 const Arena = {
-  getDimensions: (cb, err) => {
+  getDimensions: () => {
     return prepareAndPostMessage({
       obj: 'Arena',
       fn: 'getDimensions',
       args: []
-    }, cb, err);
+    });
   }
 }
