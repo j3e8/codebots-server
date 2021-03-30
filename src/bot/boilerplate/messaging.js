@@ -21,38 +21,25 @@ parentPort.on('message', (message) => {
   }
 });
 
-function prepareAndPostMessage(data, callback, err) {
+function prepareAndPostMessage(data) {
   // console.log('prepareAndPostMessage begin');
   let guid = makeGuid();
   let _data = Object.assign({}, data, { guid: guid });
 
-  let isPromise = callback ? false : true;
-
-  if (isRateLimited(data)) {
-    if (isPromise) {
-      return Promise.reject("Rate limit");
-    } else if (err) {
-      err("Rate limit");
-    }
-    return;
+  if (isRateLimited()) {
+    return Promise.reject("Rate limit");
   }
 
-  if (isPromise) {
-    return new Promise((resolve, reject) => {
-      __callbacks[guid] = resolve;
-      parentPort.postMessage(_data);
-    })
-    .catch((e) => {
-      console.error(`Worker promise error`, data, e);
-      parentPort.postMessage({
-        error: e.toString(),
-      });
-    });
-  }
-  else {
-    __callbacks[guid] = callback;
+  return new Promise((resolve, reject) => {
+    __callbacks[guid] = resolve;
     parentPort.postMessage(_data);
-  }
+  })
+  .catch((e) => {
+    console.error(`Worker promise error`, data, e);
+    parentPort.postMessage({
+      error: e.toString(),
+    });
+  });
   // console.log('prepareAndPostMessage done');
 }
 
@@ -65,9 +52,8 @@ function makeGuid() {
   return str;
 }
 
-function isRateLimited(data) {
+function isRateLimited() {
   messageHistory.push({
-    data,
     time: new Date().getTime(),
   });
 

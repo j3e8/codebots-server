@@ -10,18 +10,19 @@ class Bot {
 
   constructor() {
     // fun little overrides
+    console.info = this.log;
     console.log = this.log;
     console.warn = this.log;
     console.error = this.log;
     console.trace = () => this.log("console.trace is not allowed in Bot worker class");
   }
 
-  broadcast(msg, cb, err) {
+  broadcast(msg) {
     return prepareAndPostMessage({
       obj: 'Bot',
       fn: 'broadcast',
       args: [msg]
-    }, cb, err);
+    });
   }
 
   log(...args) {
@@ -32,108 +33,108 @@ class Bot {
     });
   }
 
-  fire(cb, err) {
+  fire() {
     return prepareAndPostMessage({
       obj: 'Bot',
       fn: 'fire',
       args: []
-    }, cb, err);
+    });
   }
 
-  forward(d, cb, err) {
+  forward(d) {
     return prepareAndPostMessage({
       obj: 'Bot',
       fn: 'forward',
       args: [d]
-    }, cb, err);
+    });
   }
 
-  getBarrelRotation(cb, err) {
+  getBarrelRotation() {
     return prepareAndPostMessage({
       obj: 'Bot',
       fn: 'getBarrelRotation',
       args: []
-    }, cb, err);
+    });
   }
 
-  getLocation(cb, err) {
+  getLocation() {
     return prepareAndPostMessage({
       obj: 'Bot',
       fn: 'getLocation',
       args: []
-    }, cb, err);
+    });
   }
 
-  getRotation(cb, err) {
+  getRotation() {
     return prepareAndPostMessage({
       obj: 'Bot',
       fn: 'getRotation',
       args: []
-    }, cb, err);
+    });
   }
 
-  getStatus(cb, err) {
+  getStatus() {
     return prepareAndPostMessage({
       obj: 'Bot',
       fn: 'getStatus',
       args: []
-    }, cb, err);
+    });
   }
 
-  reload(cb, err) {
+  reload() {
     return prepareAndPostMessage({
       obj: 'Bot',
       fn: 'reload',
       args: []
-    }, cb, err);
+    });
   }
 
-  reverse(d, cb, err) {
+  reverse(d) {
     return prepareAndPostMessage({
       obj: 'Bot',
       fn: 'reverse',
       args: [d]
-    }, cb, err);
+    });
   }
 
-  rotate(d, cb, err) {
+  rotate(d) {
     return prepareAndPostMessage({
       obj: 'Bot',
       fn: 'rotate',
       args: [d]
-    }, cb, err);
+    });
   }
 
-  rotateBarrel(d, cb, err) {
+  rotateBarrel(d) {
     return prepareAndPostMessage({
       obj: 'Bot',
       fn: 'rotateBarrel',
       args: [d]
-    }, cb, err);
+    });
   }
 
-  rotateTo(d, cb, err) {
+  rotateTo(d) {
     return prepareAndPostMessage({
       obj: 'Bot',
       fn: 'rotateTo',
       args: [d]
-    }, cb, err);
+    });
   }
 
-  rotateBarrelTo(d, cb, err) {
+  rotateBarrelTo(d) {
     return prepareAndPostMessage({
       obj: 'Bot',
       fn: 'rotateBarrelTo',
       args: [d]
-    }, cb, err);
+    });
   }
 
-  scan(cb, err) {
+  scan() {
     return prepareAndPostMessage({
       obj: 'Bot',
       fn: 'scan',
       args: []
-    }, cb, err);
+    });
   }
 
   setColor(color) {
@@ -144,27 +145,27 @@ class Bot {
     })
   }
 
-  stop(cb, err) {
+  stop() {
     return prepareAndPostMessage({
       obj: 'Bot',
       fn: 'stop',
       args: [],
-    }, cb, err);
+    });
   }
 
-  stopRotation(cb, err) {
+  stopRotation() {
     return prepareAndPostMessage({
       obj: 'Bot',
       fn: 'stopRotation',
       args: [],
-    }, cb, err);
+    });
   }
 
-  stopBarrelRotation(cb, err) {
+  stopBarrelRotation() {
     return prepareAndPostMessage({
       obj: 'Bot',
       fn: 'stopBarrelRotation',
       args: [],
-    }, cb, err);
+    });
   }
 }

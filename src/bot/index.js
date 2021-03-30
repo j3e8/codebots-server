@@ -184,14 +184,14 @@ class Bot {
       width: this.width,
       height: this.height,
       location: this.location,
-      rotation: this.rotation,
+      rotation: this.rotation / Math.PI * 180,
       barrel: {
         height: this.barrel.height,
         length: this.barrel.length,
         width: this.barrel.width,
-        rotation: this.barrel.rotation,
-        rotationVelocityInMs: this.barrel.rotationVelocity / Math.PI * 180,
-        maxRotationVelocityInMs: this.barrel.maxRotationVelocity / Math.PI * 180,
+        rotation: this.barrel.rotation / Math.PI * 180,
+        rotationVelocityPerMs: this.barrel.rotationVelocity / Math.PI * 180,
+        maxRotationVelocityPerMs: this.barrel.maxRotationVelocity / Math.PI * 180,
       },
       color: this.color,
       hp: this.hp,
@@ -273,7 +273,9 @@ class Bot {
   }
 
   setupWorker() {
-    this.worker = new Worker(this.script);
+    this.worker = new Worker(this.script, {
+      execArgv: ['--unhandled-rejections=strict'],
+    });
 
     try {
       this.worker && this.worker.postMessage({
