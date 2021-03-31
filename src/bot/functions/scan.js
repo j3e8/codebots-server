@@ -35,6 +35,7 @@ module.exports = function(callback) {
             y: b.location.y,
           },
           angle: b.angle / Math.PI * 180,
+          ownerId: b.owner.id,
           velocity: b.velocity,
         };
       }),
