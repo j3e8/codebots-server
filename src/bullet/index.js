@@ -32,6 +32,7 @@ class Bullet {
       velocity: this.velocity,
       angle: this.angle,
       damage: this.damage,
+      ownerId: this.owner.id,
     }
   }
 }
