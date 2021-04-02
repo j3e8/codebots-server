@@ -48,6 +48,19 @@ class Room {
     let found = this.players.find((c) => c.id == player.id);
     if (found) {
       this.players.splice(this.players.indexOf(found), 1);
+      if (found.bot && found.bot.worker) {
+        found.bot.worker.terminate()
+        found.bot.worker = null;
+      }
+    }
+
+    if (!this.players.length) {
+      return;
+    }
+
+    // Reassign new owner to the room
+    if (this.owner.id === player.id) {
+      this.owner = this.players[0];
     }
   }
 }

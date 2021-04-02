@@ -42,6 +42,7 @@ const disconnect = require('./src/disconnect');
 const setUsername = require('./src/set-username');
 const createRoom = require('./src/create-room');
 const joinRoom = require('./src/join-room');
+const leaveRoom = require('./src/leave-room');
 const selectBot = require('./src/select-bot');
 const selectCmpBot = require('./src/select-cmp-bot');
 const startMatch = require('./src/start-match');
@@ -101,6 +102,7 @@ io.on('connection', function(socket) {
   socket.on('setUsername', setUsername.bind(this, env, player));
   socket.on('createRoom', createRoom.bind(this, env, player));
   socket.on('joinRoom', joinRoom.bind(this, env, player));
+  socket.on('leaveRoom', leaveRoom.bind(this, env, player));
   socket.on('selectBot', selectBot.bind(this, env, player));
   socket.on('selectCmpBot', selectCmpBot.bind(this, env, player));
   socket.on('startMatch', startMatch.bind(this, env, player));
