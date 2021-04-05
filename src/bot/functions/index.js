@@ -1,6 +1,7 @@
 module.exports = {
   broadcast: require('./broadcast'),
   log: require('./log'),
+  dropMine: require('./dropMine'),
   fire: require('./fire'),
   forward: require('./forward'),
   getBarrelRotation: require('./get-barrel-rotation'),

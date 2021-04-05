@@ -4,6 +4,8 @@ const MatchFunctions = require('../match/functions');
 const ArenaFunctions = require('../arena/functions');
 const getId = require('./get-id');
 
+const MINE_COUNT = 3;
+
 class Bot {
   constructor(env, owner, name, script) {
     this.id = getId();
@@ -32,7 +34,6 @@ class Bot {
   }
 
   emitScriptError(err) {
-    console.error('Worker script error:', err);
     if (this.owner && this.owner.socket) {
       this.owner.socket.emit('scriptError', {
         botId: this.id,
@@ -76,6 +77,21 @@ class Bot {
     }
   }
 
+  /* When this bot runs over a mine */
+  onBlastedWithMine(owner, mine) {
+    this.doDamage(mine.damage);
+    if (!this.alive) {
+      return;
+    }
+    try {
+      this.worker && this.worker.postMessage({
+        fn: 'onBlastedWithMine',
+        args: [owner.getStatus(), mine.getStatus()],
+      });
+    } catch (ex) { }
+  }
+
+  /* When this bot crashes into another bot */
   onCrash(otherBot) {
     this.doDamage(otherBot.crashDamage * otherBot.velocity);
     this.revertMove();
@@ -91,7 +107,7 @@ class Bot {
   }
 
   /* You died. This is who killed you */
-  onDied(bot, bullet) {
+  onDied(bot, bullet, mine) {
     this.stats.killer = bot ? bot.getBotData() : null;
     const livingBots = this.match.room.bots.filter(b => b.alive);
     this.stats.rank = livingBots.length + 1;
@@ -99,7 +115,7 @@ class Bot {
     try {
       this.worker && this.worker.postMessage({
         fn: 'onDied',
-        args: [bot.getStatus(), bullet ? bullet.getStatus() : undefined],
+        args: [bot.getStatus(), bullet ? bullet.getStatus() : undefined, mine ? mine.getStatus() : undefined],
       });
     } catch (ex) { }
   }
@@ -115,13 +131,35 @@ class Bot {
     } catch (ex) { }
   }
 
+  /* This bot's bullet hit a mine */
+  onHitMine(bullet, mine) {
+    this.stats.minesDetonated++;
+    try {
+      this.worker && this.worker.postMessage({
+        fn: 'onHitMine',
+        args: [bullet.getStatus(), mine.getStatus()],
+      });
+    } catch (ex) { }
+  }
+
   /* You killed some other bot */
-  onKill(bot, bullet) {
+  onKill(bot, bullet, mine) {
     this.stats.kills++;
     try {
       this.worker && this.worker.postMessage({
         fn: 'onKill',
-        args: [bot.getStatus(), bullet ? bullet.getStatus() : undefined],
+        args: [bot.getStatus(), bullet ? bullet.getStatus() : undefined, mine ? mine.getStatus() : undefined],
+      });
+    } catch (ex) { }
+  }
+
+  /* Your mine was detonated */
+  onMineDetonated(mine, bot, bullet) {
+    this.stats.minesDetonated++;
+    try {
+      this.worker && this.worker.postMessage({
+        fn: 'onMineDetonated',
+        args: [mine.getStatus(), bot ? bot.getStatus() : undefined, bullet ? bullet.getStatus() : undefined],
       });
     } catch (ex) { }
   }
@@ -159,11 +197,29 @@ class Bot {
     this.stats.points = (this.match.room.bots.length - 1) + this.stats.kills;
   }
 
+  dropMine(m) {
+    this.stats.minesDropped++;
+    this.minesLeft--;
+    this.match.placeMine(m);
+  }
+
   fireBullet(b) {
     this.stats.bulletsFired++;
     this.lastBulletFiredTime = new Date().getTime();
     this.isLoaded = false;
     this.match.fireBullet(b);
+  }
+
+  getNonCircularStats() {
+    const stats = Object.assign({}, this.stats);
+    if (stats.killer) {
+      stats.killer = {
+        id: stats.killer.id,
+        playerName: stats.killer.playerName,
+        name: stats.killer.name,
+      };
+    }
+    return stats;
   }
 
   getBotData() {
@@ -172,7 +228,7 @@ class Bot {
       playerName: this.owner ? this.owner.name : 'Cmp',
       name: this.name,
       color: this.color,
-      stats: this.stats,
+      stats: this.getNonCircularStats(),
       seized: this.seized,
     }
   }
@@ -204,6 +260,7 @@ class Bot {
       maxRotationVelocityPerMs: this.maxRotationVelocity / Math.PI * 180,
       reloadTimeInMs: this.timeBetweenBullets,
       scanDurationInMs: this.scanDuration,
+      minesLeft: this.minesLeft,
     }
   }
 
@@ -211,10 +268,24 @@ class Bot {
     if (bullet.owner == this) {
       return false;
     }
-    let pt = bullet.location;
-    let sqd = (pt.x - this.location.x)*(pt.x - this.location.x) + (pt.y - this.location.y)*(pt.y - this.location.y);
-    let r = Math.min(this.width, this.height) / 2;
+    const pt = bullet.location;
+    const sqd = (pt.x - this.location.x)*(pt.x - this.location.x) + (pt.y - this.location.y)*(pt.y - this.location.y);
+    const r = Math.min(this.width, this.height) / 2;
     if (sqd <= r * r) {
+      return true;
+    }
+    return false;
+  }
+
+  hitTestMine(mine) {
+    // if (mine.owner == this) {
+    //   return false;
+    // }
+    const pt = mine.location;
+    const sqd = (pt.x - this.location.x)*(pt.x - this.location.x) + (pt.y - this.location.y)*(pt.y - this.location.y);
+    const radius = Math.min(this.width, this.height) / 2;
+    const mineRadius = Math.min(mine.width, mine.height) / 2;
+    if (sqd <= (radius + mineRadius) * (radius + mineRadius)) {
       return true;
     }
     return false;
@@ -240,12 +311,15 @@ class Bot {
       length: 2.2,
     };
     this.lastBulletFiredTime = 0; // timestamp
+    this.minesLeft = MINE_COUNT;
 
     this.stats = {
       hits: 0,
       bulletsFired: 0,
       kills: 0,
       killer: null,
+      minesDetonated: 0,
+      minesDropped: 0,
       rank: null,
       points: 0,
       cumulativePoints: this.stats ? this.stats.cumulativePoints : 0,
@@ -312,7 +386,6 @@ class Bot {
     });
 
     this.worker.on("error", (err) => {
-      console.log("this.worker.on('error')");
       try {
         this.emitScriptError(err);
         this.worker.terminate();

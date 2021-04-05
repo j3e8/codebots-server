@@ -33,6 +33,14 @@ class Bot {
     });
   }
 
+  dropMine() {
+    return prepareAndPostMessage({
+      obj: 'Bot',
+      fn: 'dropMine',
+      args: []
+    });
+  }
+
   fire() {
     return prepareAndPostMessage({
       obj: 'Bot',

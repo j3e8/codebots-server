@@ -74,6 +74,41 @@ class Match {
       }
     }
 
+    // collision between bots and mines
+    for (let m=0; m < this.mines.length; m++) {
+      const mine = this.mines[m];
+      for (let b=0; b < this.bots.length; b++) {
+        if (this.bots[b].hitTestMine(mine)) {
+          let botAlive = this.bots[b].alive;
+          this.bots[b].onBlastedWithMine(mine.owner, mine);
+          mine.owner.onMineDetonated(mine, this.bots[b], null);
+          if (botAlive !== this.bots[b].alive) {
+            mine.owner.onKill(this.bots[b], null, mine);
+            this.bots[b].onDied(mine.owner, null, mine);
+          }
+          this.mines.splice(m, 1);
+          m--;
+          break;
+        }
+      }
+    }
+
+    // collision between bullets and mines
+    for (let m=0; m < this.mines.length; m++) {
+      const mine = this.mines[m];
+      for (let b=0; b < this.bullets.length; b++) {
+        if (mine.hitTestBullet(this.bullets[b])) {
+          this.bullets.splice(b, 1);
+          this.bullets[b].owner.onHitMine(this.bullets[b], mine);
+          mine.owner.onMineDetonated(mine, null, this.bullets[b]);
+          this.mines.splice(m, 1);
+          m--;
+          break;
+        }
+      }
+    }
+
+
     // animate bullets
     for (let i=0; i < this.bullets.length; i++) {
       let bul = this.bullets[i];
@@ -150,6 +185,10 @@ class Match {
     });
   }
 
+  placeMine(mine) {
+    this.mines.push(mine);
+  }
+
   fireBullet(bullet) {
     this.bullets.push(bullet);
   }
@@ -159,6 +198,7 @@ class Match {
       arena: this.arena.getStatus(),
       bots: this.bots.map((b) => b.getStatus()),
       bullets: this.bullets.map((b) => b.getStatus()),
+      mines: this.mines.map((m) => m.getStatus()),
       elapsedTime: (this.endTime || new Date().getTime()) - this.startTime
     }
   }
@@ -172,6 +212,7 @@ class Match {
     this.bots = this.room.bots;
     this.bots.forEach(bot => bot.prepareForMatch());
     this.bullets = [];
+    this.mines = [];
     this.ended = false;
 
     this.startTime = new Date().getTime();
